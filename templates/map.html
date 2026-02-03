@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PamPan - Mapa Accesible</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { height: 100vh; display: flex; flex-direction: column; }
+        #main-container { flex: 1; overflow: hidden; position: relative; }
+        
+        /* Pin rojo para contraste */
+        .custom-pin { filter: hue-rotate(140deg) brightness(0.9); }
+
+        /* Estilos Ley de Fitts */
+        .leaflet-touch .leaflet-bar a {
+            width: 60px !important; height: 60px !important; line-height: 60px !important;
+            font-size: 24px !important; color: #78350f !important; background-color: #fffbeb !important;
+            border-bottom: 1px solid #d97706 !important;
+        }
+        .leaflet-touch .leaflet-bar a:last-child { border-bottom: none !important; }
+        .leaflet-bar {
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+            border: 2px solid #d97706 !important; border-radius: 8px !important;
+        }
+        
+        /* Animación Toast */
+        @keyframes slideUp { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .toast-enter { animation: slideUp 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-orange-50 font-sans">
+
+    <!-- Navbar -->
+    <nav class="h-16 bg-yellow-950 flex justify-between items-center px-4 text-white shadow-md z-30 shrink-0" aria-label="Navegación Principal">
+        <a href="/" class="flex items-center gap-2 font-bold text-lg hover:text-amber-200 transition focus:ring-2 focus:ring-white rounded" aria-label="Volver al inicio">
+            <i data-lucide="arrow-left" class="w-5 h-5" aria-hidden="true"></i>
+            <span class="hidden md:inline">Regresar</span>
+        </a>
+        <div class="flex items-center gap-2">
+            <i data-lucide="dessert" class="w-6 h-6 text-amber-400" aria-hidden="true"></i>
+            <h1 class="text-lg font-bold font-serif">PamPan Tijuana</h1>
+        </div>
+        <div class="w-8"></div>
+    </nav>
+
+    <!-- PESTAÑAS MÓVILES -->
+    <div class="md:hidden flex border-b border-amber-200 bg-orange-100" role="tablist" aria-label="Vistas de la aplicación">
+        <button onclick="cambiarPestana('mapa')" id="tab-mapa" class="flex-1 py-3 text-center font-bold text-amber-900 border-b-4 border-amber-600 focus:outline-none focus:bg-amber-200" role="tab" aria-selected="true" aria-controls="panel-mapa">
+            Mapa
+        </button>
+        <button onclick="cambiarPestana('lista')" id="tab-lista" class="flex-1 py-3 text-center font-bold text-amber-700 hover:bg-orange-200 border-b-4 border-transparent focus:outline-none focus:bg-amber-200" role="tab" aria-selected="false" aria-controls="panel-lista">
+            Lista de Lugares
+        </button>
+    </div>
+
+    <!-- Layout Principal -->
+    <div id="main-container" class="flex flex-row">
+        
+        <!-- SECCIÓN 1: LISTA -->
+        <aside id="panel-lista" class="hidden md:flex flex-col w-full md:w-1/3 bg-white border-r border-amber-200 z-20 h-full absolute md:relative" role="tabpanel" aria-labelledby="tab-lista">
+            <div class="p-4 bg-orange-50 border-b border-amber-100">
+                <h2 class="font-bold text-amber-900 flex items-center gap-2">
+                    <i data-lucide="list" class="w-5 h-5" aria-hidden="true"></i> 
+                    Panaderías Guardadas
+                </h2>
+                <p class="text-xs text-amber-900 mt-1">Selecciona un lugar para verlo en el mapa.</p>
+            </div>
+            
+            <div id="lista-lugares" class="p-4 space-y-3 overflow-y-auto flex-1">
+                <div id="empty-state" class="text-center text-gray-400 py-10 opacity-60">
+                    <p>No hay marcadores aún.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- SECCIÓN 2: MAPA -->
+        <main id="panel-mapa" class="w-full md:w-2/3 h-full relative" role="tabpanel" aria-labelledby="tab-mapa">
+            <div id="map" class="h-full w-full" aria-label="Mapa interactivo"></div>
+            
+            <!-- Toast Feedback -->
+            <div id="toast" class="hidden absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[1000] bg-stone-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 pointer-events-none" role="status" aria-live="polite">
+                <div id="toast-icon" aria-hidden="true"></div>
+                <span id="toast-msg" class="font-medium"></span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // --- 1. Inicialización ---
+        var map = L.map('map', { zoomControl: false }).setView([32.5149, -117.0382], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // ARIA Labels
+        setTimeout(() => {
+            const zoomIn = document.querySelector('.leaflet-control-zoom-in');
+            const zoomOut = document.querySelector('.leaflet-control-zoom-out');
+            if(zoomIn) zoomIn.setAttribute('aria-label', 'Acercar mapa');
+            if(zoomOut) zoomOut.setAttribute('aria-label', 'Alejar mapa');
+        }, 1000);
+
+        var redIcon = new L.Icon.Default({ className: 'custom-pin' });
+        
+        // VARIABLES DE ESTADO
+        var tempMarker = null;
+        var contadorPuntos = 0; // NUEVO: Contador para numerar los puntos
+
+        // --- 2. Lógica Pestañas ---
+        function cambiarPestana(vista) {
+            const mapaPanel = document.getElementById('panel-mapa');
+            const listaPanel = document.getElementById('panel-lista');
+            const tabMapa = document.getElementById('tab-mapa');
+            const tabLista = document.getElementById('tab-lista');
+
+            if (vista === 'mapa') {
+                mapaPanel.classList.remove('hidden');
+                listaPanel.classList.add('hidden');
+                tabMapa.classList.add('border-amber-600', 'text-amber-900');
+                tabMapa.classList.remove('border-transparent', 'text-amber-700');
+                tabLista.classList.remove('border-amber-600', 'text-amber-900');
+                tabLista.classList.add('border-transparent', 'text-amber-700');
+                tabMapa.setAttribute('aria-selected', 'true');
+                tabLista.setAttribute('aria-selected', 'false');
+                setTimeout(() => { map.invalidateSize(); }, 100);
+            } else {
+                mapaPanel.classList.add('hidden');
+                listaPanel.classList.remove('hidden');
+                listaPanel.classList.add('flex');
+                tabLista.classList.add('border-amber-600', 'text-amber-900');
+                tabLista.classList.remove('border-transparent', 'text-amber-700');
+                tabMapa.classList.remove('border-amber-600', 'text-amber-900');
+                tabMapa.classList.add('border-transparent', 'text-amber-700');
+                tabLista.setAttribute('aria-selected', 'true');
+                tabMapa.setAttribute('aria-selected', 'false');
+            }
+        }
+
+        // --- 3. Interacción ---
+        map.on('click', function(e) {
+            if (tempMarker) map.removeLayer(tempMarker);
+            tempMarker = L.marker(e.latlng, {icon: redIcon}).addTo(map);
+
+            var popupContent = `
+                <div class="text-center p-2">
+                    <p class="font-bold text-orange-700 mb-2">¿Te gustó este lugar?<br>Guardar su ubicación!</p>
+                    <button onclick="guardarPunto(${e.latlng.lat}, ${e.latlng.lng})" 
+                        class="bg-yellow-900 text-white px-4 py-1 rounded hover:bg-yellow-950 font-bold w-full mb-2"
+                        aria-label="Confirmar guardar este punto">
+                        Sí, guardar
+                    </button>
+                    <button onclick="cancelarPunto()" class="text-xs text-gray-500 underline hover:text-red-700">Cancelar</button>
+                </div>`;
+            tempMarker.bindPopup(popupContent).openPopup();
+        });
+
+        window.cancelarPunto = function() {
+            if (tempMarker) { map.removeLayer(tempMarker); tempMarker = null; }
+        };
+
+        window.guardarPunto = function(lat, lng) {
+            tempMarker.closePopup();
+            mostrarToast("Guardando aroma...", true);
+
+            fetch('/guardar_punto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lat: lat, lng: lng })
+            })
+            .then(r => r.json())
+            .then(data => {
+                mostrarToast("¡Panadería Guardada!", false);
+                tempMarker = null;
+                
+                // Usamos el contador en el popup del mapa también
+                contadorPuntos++; 
+                
+                L.marker([lat, lng], {icon: redIcon}).addTo(map)
+                    .bindPopup(`<b>Panadería Número: ${contadorPuntos}</b>`);
+                
+                // AGREGAR A LA LISTA
+                agregarItemLista(lat, lng, contadorPuntos);
+            })
+            .catch(e => mostrarToast("Error al conectar", false, true));
+        };
+
+        function agregarItemLista(lat, lng, numero) {
+            const emptyState = document.getElementById('empty-state');
+            if (emptyState) emptyState.style.display = 'none';
+
+            const lista = document.getElementById('lista-lugares');
+            const item = document.createElement('div');
+            
+            // Texto descriptivo con número
+            const textoDescriptivo = `Lat: ${lat.toFixed(4)}, Long: ${lng.toFixed(4)}`;
+            
+            item.className = "bg-orange-50 p-4 rounded-lg border border-orange-200 hover:bg-orange-100 cursor-pointer mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500";
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', '0');
+            item.setAttribute('aria-label', `Ir a Punto Número ${numero}: ${textoDescriptivo}`);
+
+            // NUEVO: Renderizamos el número en el título
+            item.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-100 text-amber-800 font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0 border border-amber-300">
+                        ${numero}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-amber-900 text-sm">Panadería Número: ${numero}</h3>
+                        <p class="text-xs text-stone-600 font-mono">${textoDescriptivo}</p>
+                    </div>
+                </div>
+            `;
+
+            const irAlPunto = () => {
+                if(window.innerWidth < 768) cambiarPestana('mapa');
+                map.flyTo([lat, lng], 17);
+            };
+
+            item.onclick = irAlPunto;
+            item.onkeypress = (e) => { if(e.key === 'Enter') irAlPunto(); };
+
+            lista.prepend(item);
+            lucide.createIcons();
+        }
+
+        function mostrarToast(msg, isLoading, isError=false) {
+            var t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            var icon = document.getElementById('toast-icon');
+            t.classList.remove('hidden'); t.classList.add('toast-enter');
+            
+            if(isLoading) icon.innerHTML = '<i data-lucide="loader-2" class="animate-spin w-5 h-5 text-orange-400"></i>';
+            else if(isError) icon.innerHTML = '<i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>';
+            else {
+                icon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>';
+                setTimeout(() => t.classList.add('hidden'), 2000);
+            }
+            lucide.createIcons();
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

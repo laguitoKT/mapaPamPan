@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PamPan - Panadería Artesanal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuentes: 'Merriweather' (Serif para títulos tradicionales) y 'Open Sans' -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,300&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Open Sans', sans-serif; }
+        h1, h2, h3, .serif-font { font-family: 'Merriweather', serif; }
+
+        /* Imagen de fondo: Panadería con tonos neutros y cálidos */
+        .hero-bg {
+            background-image: linear-gradient(rgba(66, 32, 6, 0.5), rgba(66, 32, 6, 0.3)), url('https://editorialtelevisa.brightspotcdn.com/dims4/default/06037bf/2147483647/strip/true/crop/1200x675+0+14/resize/1440x810!/quality/90/?url=https%3A%2F%2Fk2-prod-editorial-televisa.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fb7%2F29%2Fe1b4774d4fe9b811441801b88c5e%2Fpan-dulce-mexico.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Efecto parallax sutil */
+        }
+    </style>
+</head>
+<body class="bg-orange-50 text-stone-800 antialiased">
+
+    <!-- Navegación -->
+    <nav class="absolute top-0 w-full p-6 flex justify-between items-center z-10 text-white">
+        <div class="text-3xl font-bold flex items-center gap-2 serif-font tracking-wide drop-shadow-md">
+            <i data-lucide="dessert" class="w-8 h-8 text-amber-300"></i>
+            PamPan
+        </div>
+
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-bg h-screen flex flex-col justify-center items-center text-center px-4">
+        
+        <!-- Título Principal -->
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 drop-shadow-xl text-white serif-font leading-tight">
+            Un olor delicioso
+        </h1>
+        
+        <!-- Subtítulo / Propuesta de Valor -->
+        <h2 class="text-xl md:text-3xl font-bold mb-10 text-white italic serif-font max-w-2xl drop-shadow-md">
+            a la vuelta de la esquina.
+        </h2>
+        
+        <!-- CTA Prominente (Call to Action) -->
+        <!-- Usamos un naranja vibrante para contrastar con los tonos neutros del fondo -->
+        <a href="/mapa" class="group bg-amber-100 hover:bg-amber-200 text-orange-800 font-bold py-4 px-10 rounded-full text-lg md:text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-3 ring-4 ring-orange-800/30">
+            <span class="group-hover:translate-x-1 transition-transform">Explorar Mapa</span>
+            <i data-lucide="map-pin" class="w-6 h-6"></i>
+        </a>
+        
+        <p class="mt-6 text-amber-200 text-sm md:text-base font-bold">
+            Guarda las mejores conchas y bolillos que hayas probado.
+        </p>
+    </header>
+
+    <!-- Sección de Características (Tonos Beige y Café) -->
+    <section class="py-24 px-6 max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+            <h3 class="text-3xl font-bold text-amber-900 mb-4 serif-font">La Ruta del Pan</h3>
+            <div class="w-24 h-1 bg-amber-500 mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <!-- Feature 1 -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg border-t-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
+                <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mb-6 mx-auto text-orange-600">
+                    <i data-lucide="map-pin-check-inside" class="w-7 h-7"></i>
+                </div>
+                <h4 class="text-xl font-bold text-stone-800 mb-3 text-center">Localización</h4>
+                <p class="text-stone-600 text-center leading-relaxed">
+                    Nuestro mapa te ayud a tener siempre a la mano las panaderías más cercanas.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg border-t-4 border-amber-600 hover:shadow-xl transition-shadow duration-300">
+                <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mb-6 mx-auto text-orange-700">
+                    <i data-lucide="heart" class="w-7 h-7"></i>
+                </div>
+                <h4 class="text-xl font-bold text-stone-800 mb-3 text-center">Calidad Local</h4>
+                <p class="text-stone-600 text-center leading-relaxed">
+                    Apoya a los panaderos locales. Guarda tus lugares favoritos.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg border-t-4 border-amber-700 hover:shadow-xl transition-shadow duration-300">
+                <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mb-6 mx-auto text-amber-800">
+                    <i data-lucide="donut" class="w-7 h-7"></i>
+                </div>
+                <h4 class="text-xl font-bold text-stone-800 mb-3 text-center">Antojito</h4>
+                <p class="text-stone-600 text-center leading-relaxed">
+                    ¿Se te antoja un pansito? Visita tus panaderías guardadas y acompáñalo con un buen café.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 py-12 border-t-8 border-amber-600">
+        <div class="max-w-4xl mx-auto text-center px-4">
+            <div class="flex justify-center items-center gap-2 mb-6 text-amber-500">
+                <i data-lucide="wheat" class="w-8 h-8"></i>
+            </div>
+            <p class="mb-4 text-stone-300">"Las penas con pan son menos."</p>
+            <p class="text-sm opacity-60">&copy; 2026 PamPan. Diseñado para el antojo.</p>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

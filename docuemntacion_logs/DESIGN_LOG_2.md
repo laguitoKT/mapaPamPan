@@ -1,0 +1,3 @@
+Posición de los botones de Zoom según la Ley de Fitts:
+Según la Ley de Fitts se establece que "el tiempo para alcanzar un objetivo (interactuar con un elemento) es una función de la distancia y el tamaño del objetivo." Entonces lo que hice fue lo siguiente: 
+Los botones originalmente estaban en la parte superior izquierda, esto hacía que no fuera fácil de llegar a ellos, así que los moví a las inferior derecha para que el recorrido hacie ellos sea menor. También los botones eran muy pequeños para el tamaño de la pantalla y eran un poco dificl de visualizar de manera rápida, así que los hice más grandes, haciendo que no solo fuera más fácil de notar sino también su área tactil sea más amplia reduciendo el posible fallo de hacer click.
