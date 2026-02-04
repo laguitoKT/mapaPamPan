@@ -15,7 +15,7 @@
         /* Pin rojo para contraste */
         .custom-pin { filter: hue-rotate(140deg) brightness(0.9); }
 
-        /* Estilos Ley de Fitts */
+        /* Estilos con Ley de Fitts */
         .leaflet-touch .leaflet-bar a {
             width: 60px !important; height: 60px !important; line-height: 60px !important;
             font-size: 24px !important; color: #78350f !important; background-color: #fffbeb !important;
@@ -181,7 +181,7 @@
                 mostrarToast("¡Panadería Guardada!", false);
                 tempMarker = null;
                 
-                // Usamos el contador en el popup del mapa también
+                // Se utiliza el contador en el popup del mapa también
                 contadorPuntos++; 
                 
                 L.marker([lat, lng], {icon: redIcon}).addTo(map)
@@ -200,7 +200,7 @@
             const lista = document.getElementById('lista-lugares');
             const item = document.createElement('div');
             
-            // Texto descriptivo con número
+            // Texto descriptivo 
             const textoDescriptivo = `Lat: ${lat.toFixed(4)}, Long: ${lng.toFixed(4)}`;
             
             item.className = "bg-orange-50 p-4 rounded-lg border border-orange-200 hover:bg-orange-100 cursor-pointer mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500";
@@ -208,7 +208,7 @@
             item.setAttribute('tabindex', '0');
             item.setAttribute('aria-label', `Ir a Punto Número ${numero}: ${textoDescriptivo}`);
 
-            // NUEVO: Renderizamos el número en el título
+            //Renderización del número en el título
             item.innerHTML = `
                 <div class="flex items-center gap-3">
                     <div class="bg-amber-100 text-amber-800 font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0 border border-amber-300">

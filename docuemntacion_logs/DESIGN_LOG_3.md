@@ -6,3 +6,6 @@ Cargando: Muestra un icono de spinner y el mensaje "Guardando aroma...". Esto in
 Éxito: Si se logró guardar, el estado muestra a un check verde y el mensaje "¡Panadería Guardada!". Esto indicándole al usuario que el proceso se completó correctamente.
 
 "Error" Si no se logró guardar, el estado muestra un símbolo de alerta y el mensaje "Error al conectar". Esto indicándole al usuario que el proceso no pudo completarse debido a un error.
+
+Link a Video del flujo (Clic -> Spinner -> Éxito):
+https://drive.google.com/drive/folders/1r8oKUqvci9V3RzKE77ZV-hdzwaablpkO?usp=sharing 

@@ -7,3 +7,6 @@ Se eligieron los colores cálidos como el café, beige, amarillo o naranja ya qu
 Crea una Landing Page HTML para una app de mapas llamada
 PamPan. Debe tener un 'Hero' con una imagen de fondo de una panadería con tonos neutros, un título grande que diga "Un olor delicioso a la vuelta de la esquina", y un botón CTA prominente y fácil de localizar que diga 'Explorar Mapa'. Usa
 Tailwind CSS. El diseño debe inspirar el deseo por comer un delicioso pan dulce mexicano y debe usar colores cálidos como el café, beige, amarillo o naranja.
+
+Link a captura de la Landing: 
+https://drive.google.com/drive/folders/1r8oKUqvci9V3RzKE77ZV-hdzwaablpkO?usp=sharing 
